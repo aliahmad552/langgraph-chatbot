@@ -1,11 +1,11 @@
 import streamlit as st
-from backend_langgraph import chatbot
+from backend_langgraph import chatbot, retrieve_all_threads
 from langchain_core.messages import HumanMessage
 import uuid
 
-# ----------------------------------------------------------------------
-#                         Streamlit Utility Func
-# ----------------------------------------------------------------------
+# ******************************************************************************
+#                              Helper Functions
+# ******************************************************************************
 
 def generate_thread_id():
     return str(uuid.uuid4())
@@ -23,9 +23,9 @@ def add_thread(thread_id):
 def load_conversation(thread_id):
     return chatbot.get_state(config ={'configurable': {'thread_id':thread_id}}).values.get("messages", [])
 
-# ----------------------------------------------------------------------
-# -------------------------- Session State ------------------------------
-# ----------------------------------------------------------------------
+# ******************************************************************************
+#                              Streamlit App UI
+# ******************************************************************************
 
 if 'message_history' not in st.session_state:
     st.session_state['message_history'] = []
@@ -34,13 +34,13 @@ if 'thread_id' not in st.session_state:
     st.session_state['thread_id'] = generate_thread_id()
 
 if 'chat_threads' not in st.session_state:
-    st.session_state['chat_threads'] = [] 
+    st.session_state['chat_threads'] = retrieve_all_threads() 
 
 add_thread(st.session_state['thread_id'])
 
-# ----------------------------------------------------------------------
+# ******************************************************************************
 #                         Sidbar UI
-# ----------------------------------------------------------------------
+# ******************************************************************************
 
 st.sidebar.title('Mini Chat AI')
 
@@ -63,9 +63,9 @@ for thread_id in st.session_state['chat_threads'][::-1]:
             })
         st.session_state['message_history'] = temp_messages
 
-# ----------------------------------------------------------------------
-#                              Main UI
-# ----------------------------------------------------------------------
+# ******************************************************************************
+#                               Main UI
+# ******************************************************************************
 
 
 for messages in st.session_state['message_history']:
