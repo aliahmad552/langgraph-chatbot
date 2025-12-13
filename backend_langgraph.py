@@ -1,16 +1,17 @@
 from langgraph.graph import StateGraph, START, END
 from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
-from langchain_core.messages import HumanMessage, BaseMessage
+from langchain_core.messages import BaseMessage, HumanMessage
 from langgraph.graph.message import add_messages
 from dotenv import load_dotenv
-from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.checkpoint.sqlite import SqliteSaver
 from typing import TypedDict, Annotated
+import sqlite3
 
-# ------------------------------ load env --------------------------------
+# ****************************** Load environment variables **************
 
 load_dotenv()
 
-# ------------------------------ chat state ------------------------------
+# ****************************** Chat State ******************************
 
 class ChatState(TypedDict):
     messages : Annotated[list[BaseMessage], add_messages]
@@ -39,5 +40,18 @@ graph.add_node('chat_node', chat_node)
 graph.add_edge(START, 'chat_node')
 graph.add_edge('chat_node', END)
 
-checkpointer = InMemorySaver()
+conn = sqlite3.connect(database='chatbot.db', check_same_thread=False)
+checkpointer = SqliteSaver(conn = conn)
 chatbot = graph.compile(checkpointer = checkpointer)
+
+def retrieve_all_threads():
+    all_threads = set()
+    for checkpoint in checkpointer.list(None):
+        all_threads.add(checkpoint.config['configurable']['thread_id'])
+    return list(all_threads)
+# def retrieve_thread_ids():
+#     threads = set()
+#     for checkpoint in checkpointer.list(None):
+#         threads.append(checkpoint.config['configurable']['thread_id'])
+
+#     return list(threads)
