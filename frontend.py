@@ -39,7 +39,7 @@ if 'chat_threads' not in st.session_state:
 add_thread(st.session_state['thread_id'])
 
 # ******************************************************************************
-#                         Sidbar UI
+#                                 Sidbar UI
 # ******************************************************************************
 
 st.sidebar.title('Mini Chat AI')
@@ -64,7 +64,7 @@ for thread_id in st.session_state['chat_threads'][::-1]:
         st.session_state['message_history'] = temp_messages
 
 # ******************************************************************************
-#                               Main UI
+#                                   Main UI
 # ******************************************************************************
 
 
