@@ -1,0 +1,44 @@
+.env
+myenv
+__pycache__
+.vscode
+.ipynb_checkpoints
+.DS_Store
+.env
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.log
+instance
+.webassets-cache
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+profile_default/
+ipython_config.py
+# VSCode settings
+.vscode/
+# macOS files
+.DS_Store
+# Python virtual environments
+venv/
+env/
+ENV/
+.venv/
+.env/
+env/
+venv.bak/
+venv1/
+# Logs
+*.log
+# Database files
+*.sqlite3
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
