@@ -3,6 +3,7 @@ from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
 from langchain_core.messages import BaseMessage, HumanMessage
 from langgraph.graph.message import add_messages
 from dotenv import load_dotenv
+from langsmith import traceable
 from langgraph.checkpoint.sqlite import SqliteSaver
 from typing import TypedDict, Annotated
 import sqlite3
@@ -26,6 +27,7 @@ model = ChatHuggingFace(llm=llm)
 
 # ------------------------------ chat node  ------------------------------
 
+@traceable
 def chat_node(state: ChatState):
     messages = state['messages']
     response = model.invoke(messages)
