@@ -27,7 +27,7 @@ model = ChatHuggingFace(llm=llm)
 
 # ------------------------------ chat node  ------------------------------
 
-@traceable
+@traceable(name="chat_node_func", tags=["chatbot", "langgraph"])
 def chat_node(state: ChatState):
     messages = state['messages']
     response = model.invoke(messages)
@@ -51,9 +51,4 @@ def retrieve_all_threads():
     for checkpoint in checkpointer.list(None):
         all_threads.add(checkpoint.config['configurable']['thread_id'])
     return list(all_threads)
-# def retrieve_thread_ids():
-#     threads = set()
-#     for checkpoint in checkpointer.list(None):
-#         threads.append(checkpoint.config['configurable']['thread_id'])
-
-#     return list(threads)
+ 
