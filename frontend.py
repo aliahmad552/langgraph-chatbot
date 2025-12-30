@@ -1,6 +1,6 @@
 import streamlit as st
 from backend_langgraph import chatbot, retrieve_all_threads
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage, AIMessage,ToolMessage
 import uuid
 
 # ******************************************************************************
@@ -81,12 +81,48 @@ if user_input:
 
     CONFIG = {'configurable':{'thread_id': st.session_state['thread_id']}}
 
-    with st.chat_message('assistant'):
-        ai_response = st.write_stream(
-            message_chunk.content for message_chunk, metadata in chatbot.stream(
-                {'messages': [HumanMessage(content = user_input)]},
-                config = CONFIG,
-                stream_mode = 'messages'
+    with st.chat_message("assistant"):
+        # Mutable holder to keep ONE status box across tool calls
+        status_holder = {"box": None}
+
+        def ai_only_stream():
+            for message_chunk, metadata in chatbot.stream(
+                {"messages": [HumanMessage(content=user_input)]},
+                config=CONFIG,
+                stream_mode="messages",
+            ):
+                # Detect tool usage and show/update status
+                if isinstance(message_chunk, ToolMessage):
+                    tool_name = getattr(message_chunk, "name", "tool")
+
+                    if status_holder["box"] is None:
+                        status_holder["box"] = st.status(
+                            f"🔧 Using `{tool_name}` …",
+                            expanded=True,
+                        )
+                    else:
+                        status_holder["box"].update(
+                            label=f"🔧 Using `{tool_name}` …",
+                            state="running",
+                            expanded=True,
+                        )
+
+                # Stream ONLY assistant tokens (hide tool output)
+                if isinstance(message_chunk, AIMessage):
+                    yield message_chunk.content
+
+        # Stream the assistant response live
+        ai_message = st.write_stream(ai_only_stream())
+
+        # Finalize tool status (only if a tool was used)
+        if status_holder["box"] is not None:
+            status_holder["box"].update(
+                label="✅ Tool finished",
+                state="complete",
+                expanded=False,
             )
-        )
-    st.session_state['message_history'].append({'role':'assistant','content': ai_response})
+
+    # Save assistant message to session history
+    st.session_state["message_history"].append(
+        {"role": "assistant", "content": ai_message}
+    )
