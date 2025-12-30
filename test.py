@@ -1,6 +1,9 @@
-from openai import OpenAI
+from langchain_openai import ChatOpenAI
+from dotenv import load_dotenv
 
-model = OpenAI(model_name="gpt-4")
+load_dotenv()
 
-result  = model.invoke("Hello, world")
-print(result)
+model = ChatOpenAI(model="gpt-4.1-mini")
+
+result = model.invoke("Hello, world")
+print(result.content)
