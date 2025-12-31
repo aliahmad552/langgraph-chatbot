@@ -58,9 +58,27 @@ def get_stock_price(symbol: str) -> dict:
     response = requests.get(URL)
     return response.json()
 
+# Currency Conversion Tool
+@tool
+def get_conversion_factor(base_currency: str, target_currency: str) -> float:
+    """
+    This function fetches the currency conversion factor between a given base currency and a target currency
+    """
+    url = f'https://v6.exchangerate-api.com/v6/82508bcf011bc8c31afa5a33/pair/{base_currency}/{target_currency}'
+    response = requests.get(url)
+    return response.json()
+
+# Get Weather Data
+@tool
+def get_weather(city: str) -> dict:
+    """Get the weather data in Celsius and Farenheit of current city"""
+    url = f"http://api.weatherapi.com/v1/current.json?key=241caaad162f4c70824105148253012&q={city}"
+    response = requests.get(url)
+    return response.json()['current']
+
 # ****************************** LLM With Tools ***************************
 
-tools = [search_tool, calculator, get_stock_price]
+tools = [search_tool, calculator, get_stock_price, get_conversion_factor, get_weather]
 
 llm_with_tools = model1.bind_tools(tools)
 
