@@ -1,9 +1,7 @@
-from langchain_openai import ChatOpenAI
-from dotenv import load_dotenv
 
-load_dotenv()
+import streamlit as st
+import pandas as pd
 
-model = ChatOpenAI(model="gpt-4.1-mini")
+st.title("Chat + CSV Analyzer")
 
-result = model.invoke("Hello, world")
-print(result.content)
+st.file_uploader("W")
